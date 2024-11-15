@@ -1,50 +1,25 @@
 const express = require('express');
-const axios = require('axios');
-const cheerio = require('cheerio');
+
+const mongoose = require('mongoose');
+const userRoutes=require('./src/route/mcx')
+
+// Importing Metal model
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+app.use('/api', userRoutes);
+// MongoDB connection
+mongoose.connect('mongodb+srv://Rahul:myuser@rahul.fack9.mongodb.net/MCXSCRAP?authSource=admin&replicaSet=atlas-117kuv-shard-0&w=majority&readPreference=primary&retryWrites=true&ssl=true', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+})
+    .then(() => console.log("Connected to MongoDB"))
+    .catch(error => console.error("MongoDB connection error:", error));
 
-// Function to scrape MCX data
-const scrapeMcXData = async () => {
-    const url = 'https://mcxlive.org/';  // URL of the MCX live data page
-    const response = await axios.get(url);
-    const $ = cheerio.load(response.data);
+// Metal name translation from Chinese to English
 
-    // Data array to store scraped information
-    const data = [];
 
-    // Modify the selector according to the actual structure of the table
-    $('table tbody tr').each((index, element) => {
-        const row = {};
-        
-        // Assuming the table has columns in a specific order
-        const columns = $(element).find('td');
-        if (columns.length > 0) {
-            row.Symbol = $(columns[0]).text().trim();
-            row.Last = $(columns[1]).text().trim();
-            row.Change = $(columns[2]).text().trim();
-            row.ChangePercent = $(columns[3]).text().trim();
-            row.Close = $(columns[4]).text().trim();
-            row.High = $(columns[5]).text().trim();
-            row.Low = $(columns[6]).text().trim();
-            row.LastTrade = $(columns[7]).text().trim();
-            data.push(row);
-        }
-    });
-    return data;
-};
 
-// Define an API endpoint
-app.get('/api/mcx', async (req, res) => {
-    try {
-        const mcxData = await scrapeMcXData();
-        res.json(mcxData);
-    } catch (error) {
-        console.error('Error scraping MCX data:', error);
-        res.status(500).json({ error: 'Failed to retrieve MCX data' });
-    }
-});
 
 // Start the server
 app.listen(PORT, () => {
