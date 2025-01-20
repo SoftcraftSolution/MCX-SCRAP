@@ -6,7 +6,7 @@ const userRoutes=require('./src/route/mcx')
 // Importing Metal model
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3003;
 app.use('/api', userRoutes);
 // MongoDB connection
 mongoose.connect('mongodb+srv://Rahul:myuser@rahul.fack9.mongodb.net/MCXSCRAP?authSource=admin&replicaSet=atlas-117kuv-shard-0&w=majority&readPreference=primary&retryWrites=true&ssl=true', {
